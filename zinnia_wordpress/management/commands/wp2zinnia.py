@@ -312,7 +312,7 @@ class Command(LabelCommand):
         # Prefer use this function than
         # item_node.find('{%s}post_name' % WP_NS).text
         # Because slug can be not well formated
-        slug = slugify(title)[:255] or 'post-%s' % item_node.find(
+        slug = 'post-%s' % item_node.find(
             '{%s}post_id' % WP_NS).text
 
         entry_dict = {
