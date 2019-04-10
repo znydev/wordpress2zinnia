@@ -339,6 +339,8 @@ class Command(LabelCommand):
             defaults=entry_dict)
         if created:
             try:
+                if entry.status == PUBLISHED:
+                    entry.publication_date = creation_date
                 entry.categories.add(*self.get_entry_categories(
                     item_node.findall('category')))
                 entry.authors.add(self.authors[item_node.find(
@@ -471,4 +473,3 @@ class Command(LabelCommand):
         entry.pingback_count = entry.pingbacks.count()
         entry.trackback_count = entry.trackbacks.count()
         entry.save(force_update=True)
-
