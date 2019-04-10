@@ -293,7 +293,7 @@ class Command(LabelCommand):
                 item_node.find('{%s}post_date_gmt' % WP_NS).text,
                 '%Y-%m-%d %H:%M:%S')
         except ValueError as error:
-            print 'Import entry error: {}'.format(error)
+            print('Import entry error: {}'.format(error))
 
             creation_date = datetime.now()
 
@@ -345,7 +345,7 @@ class Command(LabelCommand):
                     '{http://purl.org/dc/elements/1.1/}creator').text])
                 entry.sites.add(self.SITE)
             except KeyError as error:
-                print 'Import entry error: {}'.format(error)
+                print('Import entry error: {}'.format(error))
 
         return entry, created
 
@@ -438,23 +438,27 @@ class Command(LabelCommand):
             if approvation == 'spam':
                 is_public = False
 
-            comment_dict = {
-                'content_object': entry,
-                'site': self.SITE,
-                'user_name': comment_node.find(
-                    '{%s}comment_author' % WP_NS).text[:50],
-                'user_email': comment_node.find(
-                    '{%s}comment_author_email' % WP_NS).text or '',
-                'user_url': comment_node.find(
-                    '{%s}comment_author_url' % WP_NS).text or '',
-                'comment': content,
-                'submit_date': submit_date,
-                'ip_address': comment_node.find(
-                    '{%s}comment_author_IP' % WP_NS).text or None,
-                'is_public': is_public,
-                'is_removed': is_removed, }
-            comment = comments.get_model()(**comment_dict)
-            comment.save()
+            try:
+                comment_dict = {
+                    'content_object': entry,
+                    'site': self.SITE,
+                    'user_name': comment_node.find(
+                        '{%s}comment_author' % WP_NS).text[:50],
+                    'user_email': comment_node.find(
+                        '{%s}comment_author_email' % WP_NS).text or '',
+                    'user_url': comment_node.find(
+                        '{%s}comment_author_url' % WP_NS).text or '',
+                    'comment': content,
+                    'submit_date': submit_date,
+                    'ip_address': comment_node.find(
+                        '{%s}comment_author_IP' % WP_NS).text or None,
+                    'is_public': is_public,
+                    'is_removed': is_removed, }
+                comment = comments.get_model()(**comment_dict)
+                comment.save()
+            except Exception as e:
+                print('fail import comment. e: %s' % e)
+                continue
             if is_pingback:
                 comment.flags.create(
                     user=get_user_flagger(), flag=PINGBACK)
@@ -467,3 +471,4 @@ class Command(LabelCommand):
         entry.pingback_count = entry.pingbacks.count()
         entry.trackback_count = entry.trackbacks.count()
         entry.save(force_update=True)
+
