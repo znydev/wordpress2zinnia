@@ -147,7 +147,7 @@ class Command(LabelCommand):
                 post_authors.add(item.find(
                     '{http://purl.org/dc/elements/1.1/}creator').text)
 
-        self.write_out('> %i authors found.\n' % len(post_authors))
+        self.write_out('Author> %i authors found.\n' % len(post_authors))
 
         authors = {}
         for post_author in post_authors:
@@ -240,7 +240,7 @@ class Command(LabelCommand):
                     '{%s}category_parent' % WP_NS).text[:255]
             except TypeError:
                 parent = None
-            self.write_out('> %s... ' % title)
+            self.write_out('Category> %s... ' % title)
             category, created = Category.objects.get_or_create(
                 slug=slug, defaults={'title': title,
                                      'parent': categories.get(parent)})
@@ -266,7 +266,7 @@ class Command(LabelCommand):
             except:
                 pass
 
-            self.write_out('> %s... ' % tag_name)
+            self.write_out('Tag> %s... ' % tag_name)
             Tag.objects.get_or_create(name=tag_name)
             self.write_out(self.style.ITEM('OK\n'))
 
@@ -384,7 +384,7 @@ class Command(LabelCommand):
                 '{http://purl.org/rss/1.0/modules/content/}encoded').text
 
             if post_type == 'post' and content and title:
-                self.write_out('> %s... ' % title)
+                self.write_out('Entry> %s... ' % title)
                 entry, created = self.import_entry(title, content, item_node)
                 if created:
                     self.write_out(self.style.ITEM('OK\n'))
@@ -398,7 +398,7 @@ class Command(LabelCommand):
                     self.write_out(self.style.NOTICE(
                         'SKIPPED (already imported)\n'))
             else:
-                self.write_out('> %s... ' % title, 2)
+                self.write_out('NotEntry> %s... ' % title, 2)
                 self.write_out(self.style.NOTICE('SKIPPED (not a post)\n'), 2)
 
     def import_image(self, entry, items, image_id):
