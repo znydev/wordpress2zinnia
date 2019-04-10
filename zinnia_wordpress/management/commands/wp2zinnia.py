@@ -261,10 +261,12 @@ class Command(LabelCommand):
                 '{%s}tag_slug' % WP_NS).text[:50]
 
             # 尝试unquote，失败说明是不需要的
-            try:
-                tag_name = urllib.parse.unquote(tag_name)
-            except:
-                pass
+            if '%' in tag_name:
+                try:
+                    tag_name = urllib.parse.unquote(tag_name)
+                except Exception as e:
+                    print('fail to unquote tag: ', tag_name)
+                    continue
 
             self.write_out('Tag> %s... ' % tag_name)
             Tag.objects.get_or_create(name=tag_name)
@@ -279,7 +281,16 @@ class Command(LabelCommand):
         for category in categories:
             domain = category.attrib.get('domain', 'category')
             if 'tag' in domain and category.attrib.get('nicename'):
-                tags.append(category.attrib.get('nicename'))
+                tag_name = category.attrib.get('nicename')
+                
+                if '%' in tag_name:
+                    try:
+                        tag_name = urllib.parse.unquote(tag_name)
+                    except Exception as e:
+                        print('fail to unquote tag: ', tag_name)
+                        continue
+
+                tags.append(tag_name)
         return tags
 
     def get_entry_categories(self, category_nodes):
