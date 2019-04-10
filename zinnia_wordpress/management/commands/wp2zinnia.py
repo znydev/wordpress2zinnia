@@ -8,6 +8,7 @@ try:
     from urllib.request import urlopen
 except ImportError:  # Python 2
     from urllib2 import urlopen
+import urllib.parse
 
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -229,6 +230,11 @@ class Command(LabelCommand):
             title = category_node.find('{%s}cat_name' % WP_NS).text[:255]
             slug = category_node.find(
                 '{%s}category_nicename' % WP_NS).text[:255]
+            # 尝试unquote，失败说明是不需要的
+            try:
+                slug = urllib.parse.unquote(slug)
+            except:
+                pass
             try:
                 parent = category_node.find(
                     '{%s}category_parent' % WP_NS).text[:255]
@@ -253,6 +259,13 @@ class Command(LabelCommand):
         for tag_node in tag_nodes:
             tag_name = tag_node.find(
                 '{%s}tag_slug' % WP_NS).text[:50]
+
+            # 尝试unquote，失败说明是不需要的
+            try:
+                tag_name = urllib.parse.unquote(tag_name)
+            except:
+                pass
+
             self.write_out('> %s... ' % tag_name)
             Tag.objects.get_or_create(name=tag_name)
             self.write_out(self.style.ITEM('OK\n'))
