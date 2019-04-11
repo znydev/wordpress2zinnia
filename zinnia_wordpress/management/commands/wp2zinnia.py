@@ -17,7 +17,8 @@ from django.core.files.temp import NamedTemporaryFile
 from django.core.management.base import CommandError
 from django.core.management.base import LabelCommand
 from django.db.utils import IntegrityError
-from django.template.defaultfilters import slugify
+# from django.template.defaultfilters import slugify
+from uuslug import slugify
 from django.utils import timezone
 from django.utils.encoding import smart_str
 from django.utils.html import strip_tags
