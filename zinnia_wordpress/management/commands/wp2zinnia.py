@@ -336,8 +336,11 @@ class Command(LabelCommand):
         # Prefer use this function than
         # item_node.find('{%s}post_name' % WP_NS).text
         # Because slug can be not well formated
-        slug = 'post-%s' % item_node.find(
-            '{%s}post_id' % WP_NS).text
+        slug = slugify(title)[:255]
+        # 比如还有中文，就会只剩下个-
+        if len(slug) <=3:
+            slug = 'post-%s' % item_node.find(
+                '{%s}post_id' % WP_NS).text
 
         entry_dict = {
             'title': title,
