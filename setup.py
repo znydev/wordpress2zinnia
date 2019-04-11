@@ -18,6 +18,7 @@ setup(
     url=zinnia_wordpress.__url__,
 
     packages=find_packages(exclude=['demo_zinnia_wordpress']),
+    install_requires=['unidecode'],
     classifiers=[
         'Framework :: Django',
         'Development Status :: 5 - Production/Stable',
