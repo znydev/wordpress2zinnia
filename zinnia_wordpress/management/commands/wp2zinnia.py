@@ -437,14 +437,28 @@ class Command(LabelCommand):
         Loops over comments nodes and import then
         in django_comments.
         """
+        # 按照评论ID从小到大排序，因为父节点一定要先创建才行
+        comment_nodes = sorted(
+            comment_nodes, 
+            key=lambda x: int(x.find(
+                '{%s}comment_id' % WP_NS).text)
+        )
+
         for comment_node in comment_nodes:
             is_pingback = comment_node.find(
                 '{%s}comment_type' % WP_NS).text == PINGBACK
             is_trackback = comment_node.find(
                 '{%s}comment_type' % WP_NS).text == TRACKBACK
 
-            title = 'Comment #%s' % (comment_node.find(
+            comment_id = int(comment_node.find(
                 '{%s}comment_id' % WP_NS).text)
+
+            comment_parent_id = int(comment_node.find(
+                '{%s}comment_parent' % WP_NS).text)
+
+            print('Comment relation>', comment_id, comment_parent_id)
+
+            title = 'Comment #%s' % comment_id
             self.write_out(' > %s... ' % title)
 
             content = comment_node.find(
@@ -471,6 +485,7 @@ class Command(LabelCommand):
 
             try:
                 comment_dict = {
+                    'id': comment_id,
                     'content_object': entry,
                     'site': self.SITE,
                     'user_name': comment_node.find(
@@ -485,6 +500,10 @@ class Command(LabelCommand):
                         '{%s}comment_author_IP' % WP_NS).text or None,
                     'is_public': is_public,
                     'is_removed': is_removed, }
+
+                if comment_parent_id:
+                    comment_dict['parent_id'] = comment_parent_id
+
                 comment = comments.get_model()(**comment_dict)
                 comment.save()
             except Exception as e:
