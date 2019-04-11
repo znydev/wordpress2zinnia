@@ -334,16 +334,18 @@ class Command(LabelCommand):
             else:
                 excerpt = ''
 
+        entry_id = item_node.find(
+            '{%s}post_id' % WP_NS).text
+
         # Prefer use this function than
         # item_node.find('{%s}post_name' % WP_NS).text
         # Because slug can be not well formated
         slug = slugify(title)[:255]
         # 比如还有中文，就会只剩下个-
         if len(slug) <=3:
-            slug = 'post-%s' % item_node.find(
-                '{%s}post_id' % WP_NS).text
-
+            slug = 'post-%s' % entry_id
         entry_dict = {
+            'id': entry_id,
             'title': title,
             'content': content,
             'excerpt': excerpt,
